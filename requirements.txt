@@ -1,9 +1,1 @@
-# Core dependencies for BoundedGlitchGPT
-
-torch>=2.0.0          # PyTorch for deep learning
-numpy>=1.21.0         # Numerical computing
-tensorboard>=2.10.0   # Visualization and monitoring during training
-
-# Optional but useful
-wandb>=0.13.0         # Experiment tracking and logging
-tqdm>=4.62.0          # Progress bars
+numpy>=1.21.0
