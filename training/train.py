@@ -1,134 +1,133 @@
-import numpy as np
+#!/usr/bin/env python3
+"""
+Train BoundedGlitchGPT (model/model.py) on a text corpus.
+
+Usage:
+    python training/train.py --data path/to/corpus.txt --steps 3000
+    python training/train.py --data path/to/corpus_dir/ --steps 3000
+
+Saves a checkpoint compatible with inference/generate.py:
+    {'config': {...}, 'model_state_dict': ..., 'training_history': [...]}
+"""
+import argparse
 import sys
 from pathlib import Path
 
-from tokenizer import CharTokenizer
-from gpt import GPT
-from dataset import TextDataset, CorpusLoader
-from loss import CrossEntropyLoss, compute_accuracy
+import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from model.model import GPT, GPTConfig, SimpleTokenizer
 
 
-class Trainer:
-    """Trainer class for GPT model."""
-    
-    def __init__(self, model, tokenizer, learning_rate=0.001):
-        self.model = model
-        self.tokenizer = tokenizer
-        self.learning_rate = learning_rate
-        self.loss_fn = CrossEntropyLoss()
-        self.losses = []
-        self.accuracies = []
-    
-    def train_epoch(self, dataset, batch_size=32):
-        """Train for one epoch."""
-        num_sequences = len(dataset)
-        indices = np.arange(num_sequences)
-        np.random.shuffle(indices)
-        
-        epoch_loss = 0
-        epoch_accuracy = 0
-        num_batches = 0
-        
-        for i in range(0, num_sequences, batch_size):
-            batch_indices = indices[i:i+batch_size]
-            batch_inputs, batch_targets = dataset.get_batch(batch_indices.tolist())
-            
-            # For simplicity, train on first sequence in batch
-            if len(batch_inputs) > 0:
-                input_tokens = batch_inputs[0].astype(np.int32)
-                target_tokens = batch_targets[0].astype(np.int32)
-                
-                # Forward pass
-                logits = self.model.forward(input_tokens)
-                
-                # Compute loss
-                loss = self.loss_fn.forward(logits, target_tokens)
-                accuracy = compute_accuracy(logits, target_tokens)
-                
-                epoch_loss += loss
-                epoch_accuracy += accuracy
-                num_batches += 1
-                
-                # Simple gradient descent (real implementation would use proper backprop)
-                # For now, just apply small random updates to weights
-                self.model.W_out += np.random.randn(*self.model.W_out.shape) * 0.0001
-        
-        avg_loss = epoch_loss / max(num_batches, 1)
-        avg_accuracy = epoch_accuracy / max(num_batches, 1)
-        
-        self.losses.append(avg_loss)
-        self.accuracies.append(avg_accuracy)
-        
-        return avg_loss, avg_accuracy
-    
-    def fit(self, dataset, epochs=3, batch_size=32, checkpoint_path="model_checkpoint.npy"):
-        """Train the model."""
-        print(f"Training for {epochs} epochs...")
-        
-        for epoch in range(epochs):
-            loss, accuracy = self.train_epoch(dataset, batch_size)
-            print(f"Epoch {epoch+1}/{epochs} - Loss: {loss:.4f}, Accuracy: {accuracy:.4f}")
-            
-            # Save checkpoint
-            if (epoch + 1) % max(1, epochs // 3) == 0:
-                self.model.save(checkpoint_path)
-        
-        print("Training complete!")
+def load_corpus(data_path: Path) -> str:
+    if data_path.is_dir():
+        files = sorted(data_path.glob("*.txt"))
+        if not files:
+            raise SystemExit(f"No .txt files found in {data_path}")
+        text = "\n".join(f.read_text(encoding="utf-8", errors="ignore") for f in files)
+        print(f"Loaded {len(files)} files from {data_path}")
+    else:
+        text = data_path.read_text(encoding="utf-8", errors="ignore")
+        print(f"Loaded {data_path}")
+    return text
+
+
+def make_batches(data: torch.Tensor, ctx_len: int, batch_size: int, device: str):
+    ix = torch.randint(len(data) - ctx_len - 1, (batch_size,))
+    x = torch.stack([data[i : i + ctx_len] for i in ix])
+    y = torch.stack([data[i + 1 : i + ctx_len + 1] for i in ix])
+    return x.to(device), y.to(device)
 
 
 def main():
-    """Main training script."""
-    
-    # Configuration
-    DATA_DIR = "data"
-    SEQ_LEN = 128
-    EMBEDDING_DIM = 128
-    NUM_LAYERS = 2
-    NUM_HEADS = 4
-    FF_DIM = 256
-    EPOCHS = 5
-    BATCH_SIZE = 8
-    
-    # Load corpus
-    print("Loading corpus...")
-    corpus_text = CorpusLoader.load_from_directory(DATA_DIR)
-    
-    if not corpus_text:
-        print("Error: No text files found in data directory")
-        sys.exit(1)
-    
-    print(f"Corpus size: {len(corpus_text)} characters")
-    
-    # Build tokenizer
-    print("Building tokenizer...")
-    tokenizer = CharTokenizer()
-    tokenizer.build_vocab(corpus_text)
-    tokenizer.save("tokenizer.json")
-    
-    # Create dataset
-    print("Creating dataset...")
-    dataset = TextDataset(corpus_text, tokenizer, seq_len=SEQ_LEN, stride=50)
-    
-    # Create model
-    print("Creating model...")
-    model = GPT(
-        vocab_size=tokenizer.vocab_size,
-        embedding_dim=EMBEDDING_DIM,
-        num_layers=NUM_LAYERS,
-        num_heads=NUM_HEADS,
-        ff_dim=FF_DIM
+    p = argparse.ArgumentParser(description="Train BoundedGlitchGPT")
+    p.add_argument("--data", type=str, required=True, help="Text file or directory of .txt files")
+    p.add_argument("--steps", type=int, default=3000)
+    p.add_argument("--batch_size", type=int, default=64)
+    p.add_argument("--lr", type=float, default=1e-3)
+    p.add_argument("--vocab_size", type=int, default=77, help="77 = real chars only, no padding waste")
+    p.add_argument("--max_context_length", type=int, default=128)
+    p.add_argument("--embed_dim", type=int, default=128)
+    p.add_argument("--num_heads", type=int, default=4)
+    p.add_argument("--num_layers", type=int, default=4)
+    p.add_argument("--ffn_hidden_dim", type=int, default=512)
+    p.add_argument("--dropout", type=float, default=0.1)
+    p.add_argument("--eval_every", type=int, default=250)
+    p.add_argument("--checkpoint", type=str, default="checkpoints/model.pt")
+    args = p.parse_args()
+
+    cfg = GPTConfig()
+    cfg.vocab_size = args.vocab_size
+    cfg.max_context_length = args.max_context_length
+    cfg.embed_dim = args.embed_dim
+    cfg.num_heads = args.num_heads
+    cfg.num_layers = args.num_layers
+    cfg.ffn_hidden_dim = args.ffn_hidden_dim
+    cfg.dropout = args.dropout
+
+    tokenizer = SimpleTokenizer(cfg.vocab_size)
+    text = load_corpus(Path(args.data))
+    ids = torch.tensor(tokenizer.encode(text), dtype=torch.long)
+    unk_frac = (ids == tokenizer.stoi["<UNK>"]).float().mean().item()
+    print(f"{len(ids):,} tokens, {unk_frac:.1%} unknown characters")
+
+    split = int(0.9 * len(ids))
+    train_data, val_data = ids[:split], ids[split:]
+    if len(val_data) <= cfg.max_context_length + 2:
+        raise SystemExit(
+            f"Corpus too small ({len(ids)} tokens) for context length "
+            f"{cfg.max_context_length}. Use more text or a smaller --max_context_length."
+        )
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Training on {device}")
+    model = GPT(cfg).to(device)
+    print(f"{sum(p_.numel() for p_ in model.parameters()):,} parameters")
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
+
+    history = []
+    for step in range(1, args.steps + 1):
+        model.train()
+        x, y = make_batches(train_data, cfg.max_context_length, args.batch_size, device)
+        _, loss = model(x, targets=y)
+        optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        optimizer.step()
+
+        if step % args.eval_every == 0 or step == args.steps:
+            model.eval()
+            with torch.no_grad():
+                vx, vy = make_batches(val_data, cfg.max_context_length, args.batch_size, device)
+                _, vloss = model(vx, targets=vy)
+            print(f"step {step}/{args.steps}: train {loss.item():.3f}  val {vloss.item():.3f}")
+            history.append({"step": step, "train_loss": loss.item(), "val_loss": vloss.item()})
+
+    model.eval()
+    print("\n--- sample ---")
+    sample_ids = model.generate(tokenizer.encode("hello"), max_new_tokens=150, temperature=0.8)
+    print(tokenizer.decode(sample_ids))
+
+    ckpt_path = Path(args.checkpoint)
+    ckpt_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(
+        {
+            "model_state_dict": model.state_dict(),
+            "config": {
+                "vocab_size": cfg.vocab_size,
+                "max_context_length": cfg.max_context_length,
+                "embed_dim": cfg.embed_dim,
+                "num_heads": cfg.num_heads,
+                "num_layers": cfg.num_layers,
+                "dropout": cfg.dropout,
+                "ffn_hidden_dim": cfg.ffn_hidden_dim,
+            },
+            "training_history": history,
+        },
+        ckpt_path,
     )
-    
-    # Create trainer
-    trainer = Trainer(model, tokenizer, learning_rate=0.001)
-    
-    # Train
-    trainer.fit(dataset, epochs=EPOCHS, batch_size=BATCH_SIZE, checkpoint_path="model.npy")
-    
-    # Save final model
-    model.save("model.npy")
-    
-    print("Training script complete!")
+    print(f"\nSaved checkpoint to {ckpt_path}")
+    print(f"Generate text with:\n  python inference/generate.py --checkpoint {ckpt_path} --prompt \"hello\"")
 
 
 if __name__ == "__main__":
