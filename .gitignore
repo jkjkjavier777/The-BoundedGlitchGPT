@@ -151,4 +151,6 @@ Thumbs.db
 .tmp/
 temp/
 *.bak
-*.backup
+*.backup__pycache__/
+*.pyc
+*.npy
