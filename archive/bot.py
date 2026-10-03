@@ -1,182 +1,323 @@
 #!/usr/bin/env python3
+
 """
-The-BoundedGlitchGPT Bot
-Trains on startup and provides an interactive conversation interface.
+BoundedGlitchGPT CLI Bot
+
+This bot is the client/runtime layer.
+The actual GPT model runs in server/app.py.
+
+Architecture:
+
+    bot.py
+       ↓
+    HTTP POST /generate
+       ↓
+    server/app.py
+       ↓
+    inference/generate.py
+       ↓
+    model/model.py
+       ↓
+    trained checkpoint
 """
 
-import numpy as np
+import argparse
+import json
+import os
 import sys
-from pathlib import Path
+import urllib.error
+import urllib.request
 
-from tokenizer import CharTokenizer
-from gpt import GPT
-from dataset import TextDataset, CorpusLoader
-from train import Trainer
+
+DEFAULT_SERVER = os.environ.get(
+    "BOUNDED_GLITCHGPT_URL",
+    "http://127.0.0.1:8000"
+)
+
+DEFAULT_MAX_TOKENS = int(
+    os.environ.get("BOUNDED_GLITCHGPT_MAX_TOKENS", "150")
+)
+
+DEFAULT_TEMPERATURE = float(
+    os.environ.get("BOUNDED_GLITCHGPT_TEMPERATURE", "0.8")
+)
 
 
 class BoundedGlitchBot:
-    """Main bot class - handles training and conversation."""
-    
-    def __init__(self, data_dir="data", model_path="model.npy", tokenizer_path="tokenizer.json"):
-        self.data_dir = data_dir
-        self.model_path = model_path
-        self.tokenizer_path = tokenizer_path
-        
-        self.model = None
-        self.tokenizer = None
-        self.dataset = None
-    
-    def load_corpus(self):
-        """Load text corpus from data directory."""
-        print("[*] Loading corpus...")
-        corpus_text = CorpusLoader.load_from_directory(self.data_dir)
-        
-        if not corpus_text:
-            print("[!] Error: No text files found in data directory")
-            return None
-        
-        print(f"[✓] Corpus loaded: {len(corpus_text):,} characters")
-        return corpus_text
-    
-    def build_tokenizer(self, corpus_text):
-        """Build or load tokenizer."""
-        if Path(self.tokenizer_path).exists():
-            print(f"[*] Loading tokenizer from {self.tokenizer_path}...")
-            tokenizer = CharTokenizer()
-            tokenizer.load(self.tokenizer_path)
-            print(f"[✓] Tokenizer loaded: {tokenizer.vocab_size} tokens")
-        else:
-            print("[*] Building tokenizer...")
-            tokenizer = CharTokenizer()
-            tokenizer.build_vocab(corpus_text)
-            tokenizer.save(self.tokenizer_path)
-            print(f"[✓] Tokenizer built and saved: {tokenizer.vocab_size} tokens")
-        
-        return tokenizer
-    
-    def build_model(self):
-        """Create GPT model."""
-        print("[*] Building model...")
-        model = GPT(
-            vocab_size=self.tokenizer.vocab_size,
-            embedding_dim=128,
-            num_layers=2,
-            num_heads=4,
-            ff_dim=256,
-            max_seq_len=256
-        )
-        print("[✓] Model created")
-        return model
-    
-    def train(self, corpus_text, epochs=3, batch_size=8):
-        """Train the model."""
-        print("\n" + "="*50)
-        print("TRAINING")
-        print("="*50)
-        
-        # Create dataset
-        print("[*] Creating dataset...")
-        dataset = TextDataset(corpus_text, self.tokenizer, seq_len=128, stride=50)
-        
-        # Train
-        trainer = Trainer(self.model, self.tokenizer)
-        trainer.fit(dataset, epochs=epochs, batch_size=batch_size, checkpoint_path=self.model_path)
-        
-        # Save model
-        self.model.save(self.model_path)
-        print(f"[✓] Model saved to {self.model_path}")
-    
-    def startup(self, force_retrain=False):
-        """Initialize bot - load or train model."""
-        print("\n" + "="*50)
-        print("THE-BOUNDEDGLITCHGPT")
-        print("="*50 + "\n")
-        
-        # Load corpus
-        corpus_text = self.load_corpus()
-        if not corpus_text:
-            sys.exit(1)
-        
-        # Build tokenizer
-        self.tokenizer = self.build_tokenizer(corpus_text)
-        
-        # Check if model exists
-        model_exists = Path(self.model_path).exists()
-        
-        if model_exists and not force_retrain:
-            print(f"\n[*] Loading model from {self.model_path}...")
-            self.model = self.build_model()
-            self.model.load(self.model_path)
-            print("[✓] Model loaded")
-        else:
-            print("\n[*] Training new model...")
-            self.model = self.build_model()
-            self.train(corpus_text, epochs=3, batch_size=8)
-        
-        print("\n[✓] Bot ready for conversation!")
-    
-    def chat(self, user_input, max_length=100, temperature=0.8):
-        """Generate response to user input."""
-        if self.model is None:
-            return "[Error] Model not initialized"
-        
+    """CLI client for the BoundedGlitchGPT inference server."""
+
+    def __init__(
+        self,
+        server_url=DEFAULT_SERVER,
+        max_tokens=DEFAULT_MAX_TOKENS,
+        temperature=DEFAULT_TEMPERATURE,
+    ):
+        self.server_url = server_url.rstrip("/")
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+
+    def health(self):
+        """Check whether the GPT inference server is running."""
+
+        url = f"{self.server_url}/health"
+
         try:
-            response = self.model.generate(
-                self.tokenizer,
-                user_input,
-                max_new_tokens=max_length,
-                temperature=temperature
+            request = urllib.request.Request(
+                url,
+                method="GET",
+                headers={"Accept": "application/json"},
             )
-            return response
-        except Exception as e:
-            return f"[Error] {str(e)}"
-    
-    def interactive_mode(self):
-        """Run interactive conversation loop."""
-        print("\n" + "="*50)
-        print("INTERACTIVE MODE")
-        print("="*50)
-        print("Type your prompts below. Type 'quit' to exit.\n")
-        
+
+            with urllib.request.urlopen(request, timeout=5) as response:
+                data = response.read().decode("utf-8")
+
+            try:
+                return json.loads(data)
+            except json.JSONDecodeError:
+                return {"status": "ok", "raw": data}
+
+        except Exception as exc:
+            return {
+                "status": "error",
+                "error": str(exc),
+            }
+
+    def generate(
+        self,
+        prompt,
+        max_tokens=None,
+        temperature=None,
+    ):
+        """Send a prompt to BoundedGlitchGPT."""
+
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("Prompt cannot be empty.")
+
+        payload = {
+            "prompt": prompt,
+            "max_tokens": max_tokens or self.max_tokens,
+        }
+
+        if temperature is not None:
+            payload["temperature"] = temperature
+        else:
+            payload["temperature"] = self.temperature
+
+        body = json.dumps(payload).encode("utf-8")
+
+        request = urllib.request.Request(
+            f"{self.server_url}/generate",
+            data=body,
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        )
+
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                response_body = response.read().decode("utf-8")
+
+        except urllib.error.HTTPError as exc:
+            error_body = exc.read().decode("utf-8", errors="replace")
+
+            raise RuntimeError(
+                f"GPT server returned HTTP {exc.code}: {error_body}"
+            ) from exc
+
+        except urllib.error.URLError as exc:
+            raise RuntimeError(
+                f"Could not connect to BoundedGlitchGPT at "
+                f"{self.server_url}. "
+                f"Make sure server/app.py is running."
+            ) from exc
+
+        except TimeoutError as exc:
+            raise RuntimeError(
+                "Request to BoundedGlitchGPT timed out."
+            ) from exc
+
+        try:
+            data = json.loads(response_body)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(
+                f"GPT server returned invalid JSON:\n{response_body}"
+            ) from exc
+
+        if not isinstance(data, dict):
+            raise RuntimeError(
+                "GPT server returned an invalid response."
+            )
+
+        if "error" in data:
+            raise RuntimeError(str(data["error"]))
+
+        text = data.get("text")
+
+        if not isinstance(text, str):
+            raise RuntimeError(
+                f"GPT server response did not contain text:\n{data}"
+            )
+
+        return text.strip()
+
+    def interactive(self):
+        """Run the terminal chat interface."""
+
+        print()
+        print("=" * 60)
+        print("THE-BOUNDEDGLITCHGPT")
+        print("=" * 60)
+        print(f"Server: {self.server_url}")
+        print()
+        print("Commands:")
+        print("  /health       Check GPT server")
+        print("  /tokens N     Set maximum generated tokens")
+        print("  /temp X       Set generation temperature")
+        print("  /quit         Exit")
+        print()
+
+        status = self.health()
+
+        if status.get("status") == "error":
+            print("[!] GPT server is not available.")
+            print(f"    {status.get('error')}")
+            print()
+            print("Start it with:")
+            print("    python server/app.py")
+            print()
+
+        else:
+            print("[✓] BoundedGlitchGPT server connected.")
+            print()
+
         while True:
             try:
                 user_input = input("You: ").strip()
-                
+
                 if not user_input:
                     continue
-                
-                if user_input.lower() in ['quit', 'exit']:
-                    print("\n[*] Goodbye!")
+
+                command = user_input.lower()
+
+                if command in {"/quit", "/exit", "quit", "exit"}:
+                    print("[*] Goodbye.")
                     break
-                
-                print("\nBot: ", end="", flush=True)
-                response = self.chat(user_input, max_length=150, temperature=0.8)
+
+                if command == "/health":
+                    print(json.dumps(self.health(), indent=2))
+                    print()
+                    continue
+
+                if command.startswith("/tokens "):
+                    try:
+                        value = int(user_input.split(maxsplit=1)[1])
+
+                        if value <= 0:
+                            raise ValueError
+
+                        self.max_tokens = value
+                        print(f"[*] max_tokens = {value}")
+                    except ValueError:
+                        print("[!] Usage: /tokens 150")
+
+                    continue
+
+                if command.startswith("/temp "):
+                    try:
+                        value = float(user_input.split(maxsplit=1)[1])
+
+                        if value <= 0:
+                            raise ValueError
+
+                        self.temperature = value
+                        print(f"[*] temperature = {value}")
+                    except ValueError:
+                        print("[!] Usage: /temp 0.8")
+
+                    continue
+
+                print()
+                print("GPT: ", end="", flush=True)
+
+                response = self.generate(
+                    user_input,
+                    max_tokens=self.max_tokens,
+                    temperature=self.temperature,
+                )
+
                 print(response)
                 print()
-            
+
             except KeyboardInterrupt:
-                print("\n\n[*] Interrupted. Goodbye!")
+                print("\n[*] Goodbye.")
                 break
-            except Exception as e:
-                print(f"\n[Error] {str(e)}\n")
+
+            except EOFError:
+                print("\n[*] Goodbye.")
+                break
+
+            except Exception as exc:
+                print(f"\n[ERROR] {exc}\n")
 
 
 def main():
-    """Main entry point."""
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="The-BoundedGlitchGPT Bot")
-    parser.add_argument("--retrain", action="store_true", help="Force retrain the model")
-    parser.add_argument("--data-dir", default="data", help="Directory containing training data")
-    
+    parser = argparse.ArgumentParser(
+        description="BoundedGlitchGPT terminal client"
+    )
+
+    parser.add_argument(
+        "--server",
+        default=DEFAULT_SERVER,
+        help="BoundedGlitchGPT server URL",
+    )
+
+    parser.add_argument(
+        "--tokens",
+        type=int,
+        default=DEFAULT_MAX_TOKENS,
+        help="Maximum generated tokens",
+    )
+
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=DEFAULT_TEMPERATURE,
+        help="Generation temperature",
+    )
+
+    parser.add_argument(
+        "--prompt",
+        type=str,
+        default=None,
+        help="Generate one response and exit",
+    )
+
     args = parser.parse_args()
-    
-    # Create and initialize bot
-    bot = BoundedGlitchBot(data_dir=args.data_dir)
-    bot.startup(force_retrain=args.retrain)
-    
-    # Start interactive conversation
-    bot.interactive_mode()
+
+    bot = BoundedGlitchBot(
+        server_url=args.server,
+        max_tokens=args.tokens,
+        temperature=args.temperature,
+    )
+
+    if args.prompt:
+        try:
+            print(
+                bot.generate(
+                    args.prompt,
+                    max_tokens=args.tokens,
+                    temperature=args.temperature,
+                )
+            )
+        except Exception as exc:
+            print(f"[ERROR] {exc}", file=sys.stderr)
+            sys.exit(1)
+
+        return
+
+    bot.interactive()
 
 
 if __name__ == "__main__":
