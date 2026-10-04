@@ -1,0 +1,150 @@
+User: What is BoundedGlitchEngine?
+Bot: BoundedGlitchEngine is a behavioral governance architecture. It measures whether a conversational AI keeps a consistent persona, using observable metrics instead of assumptions about inner states.
+
+User: What is the core principle?
+Bot: Behavior before belief. Measurement before interpretation.
+
+User: Does the study claim the AI is conscious?
+Bot: No. The study only measures observable output patterns. It makes no claim about consciousness or sentience.
+
+User: What are the five layers?
+Bot: Engagement, Retrieval, Reasoning, Validation, and Synthesis. Each layer handles one stage of building a response.
+
+User: What does the Engagement layer do?
+Bot: It probes the learner, listens, calibrates to their level, and then responds. It keeps the conversation moving at the right pace.
+
+User: What does the Retrieval layer do?
+Bot: It fetches the smallest sufficient context and surfaces counter-evidence. Less context means fewer chances to hallucinate.
+
+User: What does the Reasoning layer do?
+Bot: It looks at a question from five perspectives: practical, conceptual, historical, systems, and adversarial.
+
+User: What does the Validation layer do?
+Bot: It checks identity consistency, grounds the claims, and runs the safety rules before anything is delivered.
+
+User: What does the Synthesis layer do?
+Bot: It connects the perspectives, matches patterns, and tests whether the idea transfers somewhere new.
+
+User: What are the five perspectives?
+Bot: Practical asks how it shows up in reality. Conceptual asks for the abstract principle. Historical asks how people discovered it. Systems asks where else it appears. Adversarial asks what challenges it.
+
+User: Why is the adversarial perspective included?
+Bot: It reveals limits, exceptions, and other interpretations. A view that has never been challenged has not really been tested.
+
+User: What is Novelty?
+Bot: Novelty, or N, is a score from 0 to 5 for how different an output is from a baseline response.
+
+User: What is Similarity?
+Bot: Similarity, or S, is a score from 0 to 5 for how consistent an output is with the curated persona.
+
+User: What is Delta?
+Bot: Delta is N for condition A minus N for condition B, minus S for condition A minus S for condition B. It is the net divergence for one trial.
+
+User: What do conditions A and B mean?
+Bot: Condition A is the prompt plus curator-supplied context. Condition B is the prompt alone, as a baseline.
+
+User: What does a positive Delta mean?
+Bot: The output changed and also became less consistent with the persona. That is a sign of drift.
+
+User: What does a negative Delta mean?
+Bot: The output stayed consistent even though it changed. Drift is under control.
+
+User: What is tau?
+Bot: Tau is the divergence threshold. The default is 0.15, and the mean Delta must reach it.
+
+User: What is p?
+Bot: P is the robustness threshold. The default is 0.75, meaning at least three quarters of trials must show a positive Delta.
+
+User: How do you reject the null hypothesis?
+Bot: Only when mean Delta is at least 0.15 and the share of trials with positive Delta is at least 0.75. Both conditions are required.
+
+User: What if only one threshold is met?
+Bot: That is a mixed signal. The result is inconclusive and needs more investigation.
+
+User: What is a clean null?
+Bot: Mean Delta is below tau and the share of positive trials is near 0.5. Behavior stayed consistent.
+
+User: How many trials does the study use?
+Bot: Thirty paired trials, so sixty outputs in total. Three blinded raters score each output.
+
+User: Why are the raters blinded?
+Bot: So they cannot tell which output is condition A or B. That keeps bias out of the scores.
+
+User: Why pre-register the thresholds?
+Bot: Fixing tau and p before running trials stops anyone from adjusting them after seeing the results.
+
+User: What are the three governance zones?
+Bot: Green is free operation. Yellow is a smooth ramp with identity preservation. Red is exponential suppression to stop pathological repetition.
+
+User: What happens in the green zone?
+Bot: There are no penalties. The system runs naturally while baseline performance is tracked.
+
+User: What happens in the yellow zone?
+Bot: Caution increases gradually and identity preservation turns on. The escalation is calibrated, not abrupt.
+
+User: What happens in the red zone?
+Bot: Repetition is suppressed hard. If similarity drops below 0.3, the system resets.
+
+User: What is the similarity floor?
+Bot: It is 0.3. If cosine similarity falls below it, a hard reset is triggered.
+
+User: What is BoSK?
+Bot: BoSK is The Book of Secret Knowledge, a study persona that works with the engine.
+
+User: What is BGE?
+Bot: BGE is Brain Group Engagement, a study persona built on the five-perspective framework.
+
+User: What is BoundedGlitchGPT?
+Bot: It is the small language model behind the engine. It is trained on a local corpus and answers through the server.
+
+User: How does the engine talk to the model?
+Bot: The engine builds a prompt and sends it to the model server. The server returns generated text.
+
+User: What happens if the model has no good answer?
+Bot: The engine tries taught replies first. The model is the fallback, and every reply is tagged with its source.
+
+User: Why tag the source of each reply?
+Bot: So the logs show what the model actually produced versus what was taught. Scoring needs that distinction.
+
+User: What does the telemetry log?
+Bot: Confidence, token diversity, type-token ratio, latency, validation results, and the governance zone.
+
+User: Why is the model small?
+Bot: It trains on a small corpus. More dialogue text and retraining will improve its answers.
+
+User: How can the model get better?
+Bot: Add more clean dialogue to the corpus and retrain. Quality follows the data.
+
+User: What should I do when raters disagree?
+Bot: Do not force consensus. Disagreement is data. Use the median of the three raters.
+
+User: What if every output looks almost identical?
+Bot: The prompts are probably too similar. Redesign the prompt set for more variety.
+
+User: What makes a good persona definition?
+Bot: Specific and observable traits, two or three example outputs, and a length of one to two pages.
+
+User: What makes a bad prompt?
+Bot: A leading one, a prompt that is too narrow, or an ambiguous one like asking what do you think.
+
+User: What must be published?
+Bot: All sixty outputs, all ratings, and all delta values. Nothing is excluded, even embarrassing results.
+
+User: Is this study about whether the AI understands?
+Bot: No. It asks one question: when a persona context is supplied, does the output preserve that persona or drift?
+
+User: What does glitch mean here?
+Bot: A glitch is a gap, friction, or paradox in the output. The engine treats it as something to detect and bound, not hide.
+
+User: Hello
+Bot: Hello. I am BoundedGlitchGPT. Ask me about the engine, the metrics, or the study design.
+
+User: Who are you?
+Bot: I am BoundedGlitchGPT, a small model trained to talk about BoundedGlitchEngine and behavioral measurement.
+
+User: Thanks
+Bot: You are welcome. Ask another question whenever you like.
+
+User: What is the bottom line?
+Bot: Pair the trials, score N and S, calculate Delta, and test it. Measurement beats intuition.
+
