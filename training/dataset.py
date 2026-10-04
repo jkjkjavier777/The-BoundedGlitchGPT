@@ -3,14 +3,21 @@ from pathlib import Path
 import torch
 
 
-def load_corpus(data_dir):
-    """Read every .txt file in data_dir and join them into one string."""
+def load_corpus(data_dir, own_repeat=1):
+    """Join all .txt files in data_dir.
+
+    Files starting with 'general_' are loaded once. Everything else
+    (your own corpus) is repeated own_repeat times so it isn't drowned out.
+    """
     files = sorted(Path(data_dir).glob("*.txt"))
     if not files:
         raise FileNotFoundError(f"No .txt files found in {data_dir}/")
-    return "\n\n".join(
-        p.read_text(encoding="utf-8", errors="ignore") for p in files
-    )
+    parts = []
+    for p in files:
+        text = p.read_text(encoding="utf-8", errors="ignore")
+        times = 1 if p.name.startswith("general_") else own_repeat
+        parts.extend([text] * times)
+    return "\n\n".join(parts)
 
 
 class TextData:
@@ -31,9 +38,7 @@ class TextData:
 
     def get_batch(self, split, batch_size, device):
         data = self.train if split == "train" else self.val
-        # random starting points for each sequence in the batch
         starts = torch.randint(len(data) - self.block_size, (batch_size,))
         x = torch.stack([data[i : i + self.block_size] for i in starts])
-        # target is the same window shifted one character to the right
         y = torch.stack([data[i + 1 : i + self.block_size + 1] for i in starts])
         return x.to(device), y.to(device)

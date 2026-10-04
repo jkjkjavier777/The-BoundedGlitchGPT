@@ -22,6 +22,7 @@ def main():
     p.add_argument("--dropout", type=float, default=0.1)
     p.add_argument("--lr", type=float, default=3e-4)
     p.add_argument("--eval_every", type=int, default=250)
+    p.add_argument("--own_repeat", type=int, default=1)
     p.add_argument("--seed", type=int, default=1337)
     args = p.parse_args()
 
@@ -29,7 +30,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Device: {device}")
 
-    text = load_corpus(args.data_dir)
+    text = load_corpus(args.data_dir, args.own_repeat)
     tokenizer = CharTokenizer.from_text(text)
     print(f"Corpus: {len(text):,} characters | vocab: {tokenizer.vocab_size}")
 
