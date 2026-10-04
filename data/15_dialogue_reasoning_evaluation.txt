@@ -1,0 +1,215 @@
+USER: How should you evaluate an AI model?
+GPT: Define what good behavior means, create representative tests, measure the results, inspect failures, and compare versions using the same evaluation procedure.
+
+USER: What is a benchmark?
+GPT: A benchmark is a defined set of tasks or measurements used to compare system performance.
+
+USER: What makes a benchmark useful?
+GPT: It should measure a property that matters, use clearly defined scoring rules, and be difficult for the model to game through superficial patterns.
+
+USER: Should a benchmark contain only easy questions?
+GPT: No. It should contain a useful range of difficulty so improvements are measurable without making the task trivial.
+
+USER: What is a baseline?
+GPT: A baseline is a reference result against which later systems or experiments can be compared.
+
+USER: Why do we need a baseline?
+GPT: Without a baseline, an improvement cannot be distinguished clearly from normal variation or from a change that made the system worse.
+
+USER: What is an ablation?
+GPT: An ablation removes or changes one component to measure how much that component contributes to the overall system.
+
+USER: Why change one thing at a time?
+GPT: If several variables change simultaneously, it becomes difficult to determine which change caused the result.
+
+USER: What is an experiment?
+GPT: An experiment is a controlled test designed to answer a specific question using defined inputs, procedures, and measurements.
+
+USER: What should an experiment record?
+GPT: Record the hypothesis, data, configuration, procedure, measurements, unexpected events, and conclusion.
+
+USER: What is a hypothesis?
+GPT: A hypothesis is a testable proposed explanation or prediction about what will happen.
+
+USER: What is an observation?
+GPT: An observation is something directly measured or identified from the available evidence.
+
+USER: What is an inference?
+GPT: An inference is a conclusion drawn from observations or evidence rather than something directly observed.
+
+USER: What is a conclusion?
+GPT: A conclusion is the judgment reached after considering the available evidence and reasoning.
+
+USER: What is the difference between evidence and an explanation?
+GPT: Evidence is information supporting or challenging a claim. An explanation is a model of why the evidence may have occurred.
+
+USER: Can evidence prove every claim?
+GPT: No. Some evidence strongly supports a claim without logically proving it, and the strength of evidence depends on the type of claim and the quality of the evidence.
+
+USER: What makes evidence strong?
+GPT: Strong evidence is relevant, reliable, independently supported when possible, and directly connected to the claim being evaluated.
+
+USER: What is confirmation bias?
+GPT: Confirmation bias is the tendency to favor information that supports an existing belief while overlooking information that challenges it.
+
+USER: How can we reduce confirmation bias?
+GPT: Look deliberately for counterexamples, test competing explanations, and define evaluation criteria before seeing the results.
+
+USER: What is a counterexample?
+GPT: A counterexample is a specific case that shows a general claim cannot be true as stated.
+
+USER: What is falsifiability?
+GPT: A claim is falsifiable when there is some possible observation that could show the claim to be false.
+
+USER: Why is falsifiability useful?
+GPT: It makes a claim testable instead of allowing every possible outcome to be interpreted as support.
+
+USER: What is a null result?
+GPT: A null result is a result where the expected effect is not detected under the conditions of the experiment.
+
+USER: Does a null result prove that an effect does not exist?
+GPT: No. It may mean the effect is absent, too small to detect, or that the experiment was not sensitive enough.
+
+USER: What is generalization?
+GPT: Generalization is the ability to perform well on new examples rather than only on the examples used during training.
+
+USER: Why does generalization matter for language models?
+GPT: A useful language model must handle prompts and text patterns that were not memorized exactly from its training examples.
+
+USER: What is memorization?
+GPT: Memorization occurs when a model reproduces training examples or their patterns without developing comparable ability on new examples.
+
+USER: Is memorization always bad?
+GPT: Not necessarily. Some memorization of useful patterns is part of learning, but excessive memorization can reduce generalization.
+
+USER: How can we test for memorization?
+GPT: Compare behavior on training examples with behavior on held-out examples and look for unusually strong performance on material the model has seen directly.
+
+USER: What is data leakage?
+GPT: Data leakage occurs when information from an evaluation set improperly influences training or model development.
+
+USER: Why is data leakage dangerous?
+GPT: It can make evaluation results look better than the model's true performance on unseen data.
+
+USER: What is a train-test split?
+GPT: It separates data used to train the model from data reserved for evaluating generalization.
+
+USER: Why should the test set remain unseen?
+GPT: If the model or development process repeatedly uses the test set, the measured result can become biased toward that particular test.
+
+USER: What is validation data used for?
+GPT: Validation data helps select configurations and monitor generalization during development.
+
+USER: What is test data used for?
+GPT: Test data provides a final evaluation after development decisions have been made.
+
+USER: What is overfitting in evaluation?
+GPT: Overfitting to evaluation occurs when repeated decisions are made specifically to improve performance on the evaluation set rather than improving general ability.
+
+USER: What is an error analysis?
+GPT: Error analysis is the systematic study of failed examples to identify recurring causes and guide improvements.
+
+USER: Why inspect individual failures?
+GPT: Aggregate metrics show how much a model fails, while individual failures can reveal why it fails.
+
+USER: What categories can model failures have?
+GPT: Failures can involve knowledge, reasoning, language generation, formatting, context handling, instruction following, or system integration.
+
+USER: What if the loss improves but generated text gets worse?
+GPT: Check whether the loss measures the behavior you care about. A lower prediction loss does not guarantee better conversational quality.
+
+USER: What if generated text improves but validation loss gets worse?
+GPT: Inspect the samples and evaluation data carefully. The two measurements may capture different properties, or the model may be overfitting.
+
+USER: Can one metric measure intelligence?
+GPT: No. A single metric captures only a limited property of system behavior.
+
+USER: Why use multiple evaluation methods?
+GPT: Different measurements expose different strengths and weaknesses. Combining them gives a more complete picture.
+
+USER: How should two model versions be compared?
+GPT: Use the same evaluation data and procedure, compare quantitative metrics, and inspect representative outputs from both versions.
+
+USER: Should the better loss always win?
+GPT: No. The choice should depend on the project's objectives. A lower loss is useful evidence but not the only criterion.
+
+USER: What is a qualitative evaluation?
+GPT: It is an assessment based on inspecting examples of model behavior rather than relying only on numerical scores.
+
+USER: What is a quantitative evaluation?
+GPT: It measures performance using numerical metrics defined before or independently of the result.
+
+USER: Why use both qualitative and quantitative evaluation?
+GPT: Numbers summarize performance efficiently, while examples reveal behaviors that a single score can hide.
+
+USER: What is a confidence score?
+GPT: A confidence score represents how strongly a system estimates that an answer or prediction is likely to be correct.
+
+USER: Does confidence guarantee correctness?
+GPT: No. A system can be highly confident and still be wrong.
+
+USER: What does calibration mean?
+GPT: Calibration describes how well predicted confidence corresponds to actual correctness over many predictions.
+
+USER: Why is calibration useful?
+GPT: A calibrated system can communicate uncertainty more meaningfully because its confidence has a measurable relationship with its accuracy.
+
+USER: What should an AI do when evidence is insufficient?
+GPT: It should identify the uncertainty, avoid inventing supporting facts, and state what additional information would help.
+
+USER: What is a source?
+GPT: A source is the origin of information used to support a claim, such as a document, dataset, experiment, or reliable reference.
+
+USER: Should every statement have a source?
+GPT: Not every ordinary statement requires an external citation, but claims that depend on specific external evidence should be supported appropriately.
+
+USER: What is source quality?
+GPT: Source quality concerns how reliable, relevant, current, and directly applicable a source is to the claim being evaluated.
+
+USER: Can two sources disagree?
+GPT: Yes. Their methods, evidence, definitions, dates, or assumptions may differ. The disagreement should be examined rather than hidden.
+
+USER: What should happen when sources conflict?
+GPT: Identify the specific disagreement, compare the quality and relevance of the evidence, and avoid claiming certainty that the evidence does not support.
+
+USER: What is a model limitation?
+GPT: A model limitation is a known condition where the system's reliability, capability, or generalization is restricted.
+
+USER: Why document limitations?
+GPT: Documented limitations prevent users from treating successful demonstrations as proof that the system works equally well in every situation.
+
+USER: What is a failure mode?
+GPT: A failure mode is a recurring way in which a system can produce an incorrect, unsafe, or otherwise undesirable result.
+
+USER: Why create a failure taxonomy?
+GPT: A taxonomy groups failures into meaningful categories so recurring problems can be measured and addressed systematically.
+
+USER: What should happen after finding a failure?
+GPT: Reproduce it if possible, classify it, determine its likely cause, make a targeted change, and test whether the failure rate decreases.
+
+USER: What if a fix creates a new failure?
+GPT: Record the new failure and compare the tradeoff. A change should be judged across the complete evaluation set rather than one example.
+
+USER: What does "maximize understanding, not confidence" mean?
+GPT: It means preferring accurate explanations, evidence, and clearly stated uncertainty over answers that merely sound certain.
+
+USER: What is the difference between a useful model and a convincing model?
+GPT: A useful model produces behavior that remains reliable under evaluation. A convincing model may simply produce fluent or confident text without comparable accuracy.
+
+USER: What is the goal of evaluation?
+GPT: The goal is to discover what the model can do, where it fails, and whether changes produce genuine improvement.
+
+USER: When should an experiment be considered successful?
+GPT: When its predefined objective is met with evidence that is reproducible and stronger than the relevant baseline.
+
+USER: What should happen when an experiment fails?
+GPT: Treat the result as information. Determine which assumption failed, preserve the result, and use it to design the next experiment.
+
+USER: Why keep failed experiments?
+GPT: Failed experiments show which approaches did not work under known conditions and prevent the same work from being repeated without new reasoning.
+
+USER: What is a good research habit?
+GPT: State the question, define the measurement, change one major variable at a time, record the result, and distinguish observation from interpretation.
+
+USER: What is the most important rule when evaluating your own model?
+GPT: Do not let the model's confidence or fluency substitute for evidence of actual performance.

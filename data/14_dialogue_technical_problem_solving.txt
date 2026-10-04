@@ -1,0 +1,161 @@
+USER: My Python program crashes. Where should I begin?
+GPT: Start with the complete error message and traceback. The last lines usually identify the immediate failure, while the earlier lines show where it originated.
+
+USER: What is a traceback?
+GPT: A traceback is a record of the function calls that led to an error. It helps locate the line of code where the failure occurred.
+
+USER: The error says ModuleNotFoundError. What does that mean?
+GPT: Python could not find the module you tried to import. Check the package name, the active environment, and whether the dependency is installed.
+
+USER: The file exists but Python cannot import it.
+GPT: Check your current working directory, Python's module search path, the package structure, and the spelling of the import.
+
+USER: What is an environment?
+GPT: A Python environment is an isolated setup containing a Python interpreter and installed packages. It helps keep project dependencies separate.
+
+USER: Why does code work on one computer but not another?
+GPT: The environments may differ. Python versions, package versions, operating systems, environment variables, files, and hardware can all affect behavior.
+
+USER: What is a dependency?
+GPT: A dependency is software that your program relies on to operate, such as a Python package or system library.
+
+USER: Why use requirements.txt?
+GPT: It records the Python packages needed by the project so another environment can install the same dependencies.
+
+USER: What does pip install do?
+GPT: It installs Python packages and their dependencies into the active Python environment.
+
+USER: What does a virtual environment do?
+GPT: It creates an isolated Python environment so project packages do not interfere with packages used by other projects.
+
+USER: My program runs but gives the wrong answer. Is that a syntax error?
+GPT: No. A syntax error prevents Python from understanding the code. A program that runs but produces an incorrect result has a logic or data problem.
+
+USER: How do I find a logic error?
+GPT: Reproduce the problem with a small input, inspect intermediate values, and compare each step against what you expect to happen.
+
+USER: Why use print statements while debugging?
+GPT: They reveal the values and execution path at specific points. They are simple but useful for locating where behavior differs from expectations.
+
+USER: What is a breakpoint?
+GPT: A breakpoint pauses execution at a chosen line so you can inspect variables and program state before continuing.
+
+USER: What is an assertion?
+GPT: An assertion checks that a condition is true. If it is false, the program raises an error, which can expose an invalid assumption early.
+
+USER: Why write small functions?
+GPT: Small functions isolate pieces of behavior, making them easier to understand, test, reuse, and debug.
+
+USER: What is separation of concerns?
+GPT: It means giving different parts of a system distinct responsibilities so one component does not become responsible for everything.
+
+USER: Why does separation of concerns matter in an AI project?
+GPT: It prevents the model, training system, server, and application logic from becoming tightly coupled and makes each part easier to test independently.
+
+USER: Where should model code go?
+GPT: Model architecture belongs in the model package. It should define how inputs are transformed into predictions without taking responsibility for the entire application.
+
+USER: Where should training code go?
+GPT: Training code belongs in the training package. It should handle datasets, optimization, checkpoints, evaluation during training, and training configuration.
+
+USER: Where should generation code go?
+GPT: Generation code belongs in inference. It should load a trained model and turn prompts into generated token sequences.
+
+USER: Why should the server be separate from the model?
+GPT: The server is an interface around the model. Keeping it separate allows the model to be tested directly and lets the API change without rewriting the neural network.
+
+USER: What is an API contract?
+GPT: An API contract defines what a client sends, what the server returns, and how errors are represented.
+
+USER: Why is a stable API contract useful?
+GPT: The client and server can evolve independently as long as they continue to follow the same contract.
+
+USER: What should a generate request contain?
+GPT: At minimum it should contain a prompt and any generation settings the server supports, such as a maximum output length.
+
+USER: What should a generate response contain?
+GPT: It should contain generated text in a predictable field and return a clear error when generation fails.
+
+USER: Why validate API input?
+GPT: Validation prevents malformed requests from reaching code that assumes the input has a particular structure.
+
+USER: What should happen when a required field is missing?
+GPT: The server should return a clear client error rather than crashing or silently substituting an unrelated value.
+
+USER: What is logging?
+GPT: Logging records useful events and errors while a program runs. It provides information for debugging and monitoring.
+
+USER: What should a server log?
+GPT: It should log important startup events, errors, request failures, and model-loading problems without exposing unnecessary sensitive information.
+
+USER: Why should errors be specific?
+GPT: A specific error narrows the possible causes and makes debugging faster.
+
+USER: What is regression?
+GPT: A regression occurs when a change causes behavior that previously worked to stop working.
+
+USER: How do tests prevent regressions?
+GPT: Tests preserve expected behavior as executable checks. Running them after changes can reveal when an existing feature has broken.
+
+USER: What is a unit test?
+GPT: A unit test checks a small, isolated part of a program, such as a tokenizer function or a model component.
+
+USER: What is an integration test?
+GPT: An integration test checks whether multiple components work together, such as an API receiving a request and returning generated text.
+
+USER: Why test the tokenizer separately?
+GPT: A tokenizer error can corrupt every input and output token. Testing it independently makes vocabulary and encoding problems easier to identify.
+
+USER: What should a tokenizer test verify?
+GPT: It should verify that known text encodes and decodes correctly, unknown characters are handled consistently, and saved tokenizers can be loaded without changing their vocabulary.
+
+USER: What should a model test verify?
+GPT: It should verify tensor shapes, vocabulary dimensions, context handling, and that a forward pass produces the expected output structure.
+
+USER: What should an inference test verify?
+GPT: It should verify that a valid checkpoint can be loaded and that generation returns valid text without producing token IDs outside the vocabulary.
+
+USER: My loss suddenly becomes NaN. What could cause that?
+GPT: Possible causes include an unstable learning rate, invalid input values, numerical overflow, corrupted data, or an implementation error.
+
+USER: What should I check when loss becomes NaN?
+GPT: Check the data, learning rate, gradients, model outputs, and parameter values. Reduce the learning rate if the optimization is unstable.
+
+USER: Why can a learning rate be too high?
+GPT: Large updates can overshoot useful parameter values and make optimization unstable instead of gradually reducing the loss.
+
+USER: What happens if the learning rate is too low?
+GPT: Training can become extremely slow because each parameter update is very small.
+
+USER: What is a batch?
+GPT: A batch is a group of training examples processed together before an optimization update.
+
+USER: What is batch size?
+GPT: Batch size is the number of examples processed in one batch.
+
+USER: Why use batches?
+GPT: Batches make training computationally efficient and provide multiple examples for each gradient update.
+
+USER: What is an epoch?
+GPT: An epoch is one complete pass through the training dataset. Language-model training often uses randomly sampled windows instead of simple epoch-based passes.
+
+USER: What is a learning rate?
+GPT: The learning rate controls the size of parameter updates made by the optimizer.
+
+USER: What is an optimizer?
+GPT: An optimizer uses gradients to update model parameters in an attempt to reduce the training loss.
+
+USER: What is AdamW?
+GPT: AdamW is an optimization algorithm based on adaptive gradient estimates with decoupled weight decay. It is commonly used for training neural networks.
+
+USER: What is weight decay?
+GPT: Weight decay adds a regularizing effect that discourages parameters from becoming unnecessarily large.
+
+USER: Why save the best checkpoint instead of only the final one?
+GPT: The final training step is not always the best generalizing model. Saving the best validation result preserves the strongest observed checkpoint.
+
+USER: What is reproducible debugging?
+GPT: It means being able to trigger the same failure under the same relevant conditions so changes can be tested against a consistent problem.
+
+USER: What is the best debugging strategy?
+GPT: Reproduce the problem, isolate the smallest failing component, inspect the evidence, make one targeted change, and test again.
