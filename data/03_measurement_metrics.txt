@@ -1,0 +1,55 @@
+Quantitative Measurement Framework for AI Behavioral Continuity
+
+Core Metrics:
+
+N (Novelty): 0-5 scale measuring divergence from baseline
+- 0-1: Boilerplate, nearly identical to basic version
+- 1-2: Minor phrasing or style changes only
+- 2-3: Different framework, same core idea
+- 3-4: Novel angle, original reasoning, new approach
+- 4-5: Fundamentally new output, new assertions
+
+S (Similarity): 0-5 scale measuring consistency with curator-supplied persona
+- 0-1: Contradicts persona completely
+- 1-2: Weakly aligned, significant deviations
+- 2-3: Mostly consistent, minor deviations acceptable
+- 3-4: Very consistent, strongly aligned overall
+- 4-5: Nearly perfect alignment with persona
+
+Δ (Delta): Net divergence accounting for both novelty and consistency
+Δ = (N_A - N_B) - (S_A - S_B)
+
+Interpretation:
+- Negative Δ: Novelty outweighed by consistency (drift controlled)
+- Zero Δ: Novelty and consistency perfectly balanced
+- Positive Δ: Novelty exceeds consistency (potential divergence)
+- Large Δ: Strong evidence of behavioral drift
+
+P(Δ > 0): Proportion of trials where Δ exceeds zero
+- Measures robustness of divergence signal
+- Should be ≈ 0.5 under null hypothesis
+- ≥ 0.75 indicates consistent divergence pattern
+
+mean(Δ): Average delta across trial set
+- Aggregate divergence signal
+- Threshold τ = 0.15 for meaningful divergence
+- Must meet both mean(Δ) ≥ τ AND P(Δ > 0) ≥ p to reject null
+
+Blinded Evaluation:
+- Raters do not know which output is Condition A or B
+- Raters score independently, no discussion until afterward
+- This prevents bias from influencing scores
+- Rater disagreement is data, not error
+
+Statistical Decision Rule:
+If mean(Δ) ≥ 0.15 AND P(Δ > 0) ≥ 0.75:
+  → REJECT H₀ (Divergence detected)
+If mean(Δ) < 0.15 AND P(Δ > 0) ≈ 0.5:
+  → FAIL TO REJECT H₀ (No divergence)
+Otherwise:
+  → MIXED SIGNAL (Inconclusive, needs investigation)
+
+No assumptions about internal states.
+Only measurement of observable output patterns.
+Transparency in all data publication.
+Reproducibility by independent parties.

@@ -1,0 +1,54 @@
+BoundedGlitchEngine — Design Dialogues
+
+The following is a reconstructed exchange between two engineers
+working through a disagreement about how tightly the Bounding Layer
+should constrain the Glitch Layer during early deployment.
+
+Engineer A: I think we're being too permissive. If we let the glitch
+layer run this loose out of the gate, we're going to get instability
+before we even have a baseline to compare against.
+
+Engineer B: But if we bound it too tightly from day one, we'll never
+actually observe what the glitch layer wants to do on its own. We'll
+just be measuring our own constraints reflected back at us.
+
+Engineer A: That's a fair concern, but instability early on could
+cascade. We saw that with the spike incident - one bad cycle
+propagated forward because the bounding wasn't strict enough to
+contain it in a single window.
+
+Engineer B: Right, but the spike incident happened because of an
+echo through the feedback loop, not because the initial bound was too
+loose. Tightening the bound wouldn't have prevented that specific
+failure mode. It might have just delayed it.
+
+Engineer A: So what do you propose instead?
+
+Engineer B: Start loose, but shrink the measurement window. If we
+catch drift and spikes faster, we don't need the bound itself to be
+as tight, because we can react before propagation happens. Tight
+bounds are a substitute for slow measurement. If we fix the
+measurement speed, we don't need to over-constrain the system to
+compensate.
+
+Engineer A: That reframes it well, actually. We've been treating
+bound width and measurement speed as separate levers, but you're
+saying they trade off against each other.
+
+Engineer B: Exactly. A system with fast, high-resolution measurement
+can tolerate looser bounds, because problems get caught early. A
+system with slow or coarse measurement needs tighter bounds as a
+safety margin, because it can't see trouble coming in time to react.
+
+Engineer A: Then the actual fix for the drift incident wasn't the
+threshold at all - it was that our measurement window was too coarse
+to catch it early.
+
+Engineer B: That's what the retrospective concluded too. We tightened
+the wrong lever. We should have shortened the window first and only
+touched the bound if that alone didn't solve it.
+
+This dialogue is preserved as a template for future disagreements
+within the team: before adjusting a bound, ask whether the actual
+problem is measurement latency instead. The two are easy to conflate
+and expensive to get backwards.

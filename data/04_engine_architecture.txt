@@ -1,0 +1,56 @@
+BoundedGlitchEngine — Architecture Notes
+
+The engine is not a single component but a layered assembly of smaller,
+independently reasoned systems that pass state forward without ever
+fully trusting the layer beneath them. Each layer is bounded: it has a
+defined input contract, a defined output contract, and a defined
+failure mode. Nothing in the engine is permitted to operate outside
+those three definitions.
+
+At the base sits the Signal Layer. This is where raw input — text,
+timing, context — is captured before any interpretation happens. The
+Signal Layer does not judge, does not filter, does not decide meaning.
+Its only responsibility is fidelity: whatever comes in must be
+preserved without distortion until the next layer is ready to use it.
+
+Above the Signal Layer sits the Glitch Layer, the namesake of the
+system. This layer exists to introduce controlled irregularity —
+small, bounded deviations from the expected pattern, deliberately
+injected so that the system does not collapse into pure repetition.
+A system with no glitch layer becomes deterministic in the worst
+sense: predictable, brittle, and eventually stale. The glitch is not
+noise for its own sake. It is a pressure-release valve that keeps the
+system capable of surprising itself.
+
+The third layer, the Bounding Layer, is what keeps the glitch from
+becoming chaos. Every irregularity introduced below is checked here
+against defined limits — how far can a deviation travel before it
+threatens coherence? The Bounding Layer does not eliminate
+unpredictability. It contains it, the way a riverbank contains a
+river without stopping its flow.
+
+Above these three sits the Composition Layer, where signal, glitch,
+and bound recombine into a single coherent output. This is the layer
+most visible to an outside observer — it is the "face" of the engine
+— but it is also the layer with the least independent agency. Its job
+is synthesis, not decision.
+
+Finally, the Reflection Layer watches the whole stack from outside
+the pipeline, comparing intended behavior against actual behavior, and
+feeding discrepancies back downward as corrective pressure rather than
+as hard overrides. The Reflection Layer never forces an outcome. It
+only ever nudges the boundaries of the layer below it, slowly, over
+many cycles.
+
+Together these five layers form a loop, not a pipeline. Output from
+the Composition Layer becomes new input to the Signal Layer on the
+next cycle, meaning the engine is always mid-conversation with its
+own prior state. There is no true "reset" — only a new cycle carrying
+the residue of the last one forward, bounded, glitched, and composed
+again.
+
+The central design principle across all five layers is the same:
+never let any single layer become powerful enough to override the
+whole system on its own. Boundedness is not a limitation bolted on
+afterward. It is the organizing idea the entire engine is built
+around, from the first layer to the last.

@@ -1,0 +1,52 @@
+The Five-Perspective Reasoning Framework
+
+When analyzing complex topics, apply five distinct lenses:
+
+1. PRACTICAL PERSPECTIVE
+What does this show up as in observable reality?
+How does this mechanism work in the world?
+What is the concrete evidence?
+What can we point to and measure?
+
+2. CONCEPTUAL PERSPECTIVE
+What is the abstract principle underlying this?
+What rules or frameworks govern this behavior?
+How do concepts relate to each other?
+What are the logical relationships?
+
+3. HISTORICAL PERSPECTIVE
+How did humans discover this concept?
+What was the context of that discovery?
+How has understanding evolved over time?
+What were the key transitions in thinking?
+
+4. SYSTEMS PERSPECTIVE
+Where else does this pattern appear?
+How does this connect to other domains?
+What are the universal principles?
+How does this scale across different contexts?
+
+5. ADVERSARIAL PERSPECTIVE
+What challenges this interpretation?
+What are the limits and exceptions?
+What alternative explanations exist?
+What would disprove this view?
+
+Each perspective reveals different aspects of truth.
+No single perspective is sufficient.
+Integration of all five creates robust understanding.
+
+This framework prevents narrow thinking.
+It forces consideration of multiple angles.
+It surfaces hidden assumptions.
+It strengthens reasoning through opposition.
+
+Apply this framework to:
+- Complex technical problems
+- Behavioral questions
+- System design decisions
+- Knowledge integration
+- Testing hypotheses
+
+The goal is not consensus between perspectives.
+The goal is comprehensive understanding.

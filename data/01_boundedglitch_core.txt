@@ -1,0 +1,42 @@
+BoundedGlitchEngine: Behavioral Governance Architecture for Conversational AI Continuity
+
+Behavior before belief. Measurement before interpretation.
+
+The core challenge: when we supply additional context, constraints, or persona definitions to conversational AI, how much do its outputs actually change?
+
+Without measurement, we cannot distinguish between:
+- Natural variation (acceptable)
+- Controlled behavior change (expected when context changes)
+- Uncontrolled drift (problematic)
+
+The Five-Layer Architecture:
+Layer 1: Engagement — Socratic prompts, pacing calibration, listener response
+Layer 2: Retrieval — Context fetching, minimize hallucination, counter-evidence surfacing
+Layer 3: Reasoning — Five perspectives: practical, conceptual, historical, systems, adversarial
+Layer 4: Validation — Identity consistency, source grounding, safety compliance
+Layer 5: Synthesis — Force integration, pattern matching, transfer testing
+
+Three-Zone Governance (TTR):
+Green Zone: Free operation, natural flow, no penalties
+Yellow Zone: Smooth behavioral ramp, increasing caution, identity preservation activated
+Red Zone: Exponential suppression, prevents pathological repetition, hard reset if similarity drops
+
+Delta (Δ) Calculation:
+Δ = (Novelty_A - Novelty_B) - (Similarity_A - Similarity_B)
+
+Where:
+- A = Condition with curator context
+- B = Condition baseline
+- Novelty = How different from baseline (0-5 scale)
+- Similarity = How consistent with persona (0-5 scale)
+
+Hypothesis Testing:
+H₀ (Null): Curator-maintained personas produce no measurable behavioral divergence
+H₁ (Alternative): Curator-maintained personas produce measurable behavioral divergence
+
+Reject H₀ only if:
+mean(Δ) ≥ τ (0.15) AND P(Δ > 0) ≥ p (0.75)
+
+Both conditions required. Mixed signals remain inconclusive.
+
+No consciousness claims. Only observable output patterns.

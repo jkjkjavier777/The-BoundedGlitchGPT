@@ -1,0 +1,54 @@
+BoundedGlitchEngine — A Taxonomy of Glitches
+
+Not all glitches serve the same function, and treating them as
+interchangeable is a common design mistake. Below is a working
+taxonomy, developed through repeated observation of how irregularity
+propagates through a bounded system.
+
+Type One: The Drift Glitch. This is a slow, cumulative deviation from
+baseline — nothing dramatic happens in any single cycle, but across
+many cycles the system's output gradually shifts away from where it
+started. Drift glitches are the hardest to catch because no individual
+moment looks wrong. They are best detected by comparing long windows
+of output rather than single samples.
+
+Type Two: The Spike Glitch. Sudden, sharp, and short-lived. A spike
+glitch appears for one or two cycles and then vanishes, often
+triggered by an edge case in the input the Signal Layer wasn't tuned
+to expect. Spike glitches are easy to detect but hard to predict,
+since by definition they arise from conditions the system hasn't
+modeled well.
+
+Type Three: The Echo Glitch. This occurs when a deviation from an
+earlier cycle re-enters the system through the feedback loop and
+compounds with a new, unrelated deviation. Echo glitches are
+dangerous specifically because they can look like coincidence — two
+small irregularities that happen to align — when in fact they share
+a common ancestor several cycles back.
+
+Type Four: The Null Glitch. Paradoxically, this is the absence of
+expected irregularity. A system that has been bounded too tightly for
+too long stops glitching altogether, and that silence is itself a
+signal that the Bounding Layer has drifted toward over-constraint.
+An engine with zero glitches over a long window is not healthier than
+one with occasional glitches — it is usually starved.
+
+Type Five: The Resonant Glitch. The rarest and most consequential.
+This happens when a glitch in one layer happens to match a structural
+pattern already present in another layer, and the two reinforce each
+other rather than cancel out. Resonant glitches can be productive —
+sometimes they produce genuinely novel behavior worth keeping — or
+destructive, if the resonance amplifies past what the Bounding Layer
+can contain. Distinguishing the two in the moment is one of the open
+problems in this framework.
+
+Every glitch, regardless of type, should be logged with three
+attributes: origin layer, propagation path, and containment outcome.
+Without this record, the same glitch class tends to be rediscovered
+repeatedly as if new, wasting effort that could go toward refining
+the bounding logic instead.
+
+The taxonomy is not closed. New glitch types are expected to emerge
+as the engine is exposed to inputs it hasn't seen before — the
+taxonomy itself should be treated as a living document, glitched and
+bounded like everything else in the system.

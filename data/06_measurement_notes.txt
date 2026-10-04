@@ -1,0 +1,50 @@
+BoundedGlitchEngine — Measurement Notes
+
+Measuring a bounded system honestly is harder than measuring an
+unbounded one, because the very thing that makes it interesting —
+controlled irregularity — is also the thing most measurement tools
+are built to treat as error and discard.
+
+The first rule of measurement here is to never average away the
+glitch. A naive metric that reports only a rolling mean will smooth
+out exactly the signal that matters most. Instead, dispersion
+measures — variance, interquartile range, max deviation per window —
+should be reported alongside any central tendency statistic, and
+neither should be presented without the other.
+
+Second, measurement windows need to be chosen relative to the cycle
+length of the system being measured, not to an arbitrary clock. A
+window shorter than one full cycle will catch mid-cycle noise and
+mistake it for signal. A window many cycles long will average out
+real drift and mistake decay for stability. Somewhere between one and
+five cycles tends to be the useful range, though this should be
+tuned per deployment rather than assumed.
+
+Third, any metric reported as a single number should be treated with
+suspicion until its distribution has been inspected. Two systems can
+report identical average accuracy while one is consistently mediocre
+and the other alternates between excellent and terrible. These are
+not the same system, and a single scalar will never tell you which
+one you're looking at.
+
+Fourth, containment failures — moments where the Bounding Layer failed
+to keep a glitch inside its defined limits — should be tracked
+separately from ordinary performance metrics, and should never be
+folded into a single combined health score. A system can be
+performing acceptably on average while quietly racking up containment
+failures that will eventually compound into a larger breakdown. These
+are leading indicators, not lagging ones, and deserve to be watched
+as such.
+
+Fifth, and finally: measurement changes the system being measured.
+The act of instrumenting a layer adds latency, and latency changes
+cycle timing, and cycle timing changes how glitches propagate. There
+is no such thing as a perfectly neutral observer inside this
+architecture. The goal isn't to eliminate that effect — it can't be
+eliminated — but to keep it small, bounded, and documented, the same
+way every other irregularity in the system is handled.
+
+Good measurement, in this framework, looks less like a dashboard and
+more like a second, slower engine watching the first one — glitched
+and bounded in its own right, never claiming a cleaner vantage point
+than the thing it's observing.

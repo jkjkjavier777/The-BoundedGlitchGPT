@@ -1,0 +1,53 @@
+BoundedGlitchEngine — Containment Case Studies
+
+Case One: The Silent Drift Incident. Over a period of roughly forty
+cycles, the Composition Layer's output began favoring a narrow subset
+of its available vocabulary without any single cycle showing an
+obvious anomaly. Standard per-cycle metrics stayed within acceptable
+range throughout. It was only when a long-window dispersion check was
+run retroactively that the drift became visible: the effective
+vocabulary in use had shrunk by nearly sixty percent. The root cause
+traced back to a Bounding Layer threshold that had been set slightly
+too conservative during an earlier tuning pass, gradually starving
+the Glitch Layer of the variety it needed to keep output diverse.
+Lesson: conservative bounding is not automatically safe bounding.
+
+Case Two: The Cascading Spike. A single malformed input triggered a
+spike glitch in the Signal Layer that, instead of dissipating within
+one cycle as expected, echoed forward into the next cycle's baseline
+through the feedback loop. The second cycle's spike was smaller but
+still present, and the third cycle's was smaller still, decaying
+geometrically rather than vanishing outright. The engine self-
+corrected after roughly six cycles, but the incident revealed a gap
+in the taxonomy: this behavior didn't cleanly match either a pure
+Spike Glitch or a pure Echo Glitch, since it had properties of both.
+It was eventually classified as a hybrid and added to the taxonomy as
+a distinct pattern worth tracking separately.
+
+Case Three: The False Resonance. Two independently monitored layers
+showed what appeared to be a resonant glitch - correlated deviations
+appearing in the same cycle window across both layers. Deeper
+investigation revealed the correlation was not resonance at all, but
+a shared upstream dependency: both layers were reading from the same
+Signal Layer snapshot, and a timing artifact in that snapshot had
+been misread as a structural pattern match. This case is now used
+internally as a cautionary example: correlation between layers should
+always be checked against shared inputs before being classified as
+true resonance.
+
+Case Four: The Null Glitch That Wasn't. A long stretch of apparently
+glitch-free output was initially logged as a Null Glitch, suggesting
+over-constraint in the Bounding Layer. Further review showed the
+glitches were still occurring at the expected rate, but a change in
+the Reflection Layer's comparison window had accidentally excluded
+them from the report. The lesson generalized beyond this one incident:
+before diagnosing a system problem, rule out a measurement problem
+first. Absence of evidence in a report is not evidence of absence in
+the system.
+
+Each of these cases is retained not because the underlying issue was
+especially severe, but because each one exposed a blind spot in how
+the engine was being observed rather than in how it was behaving.
+That distinction - system fault versus observation fault - is treated
+as one of the more important distinctions this framework asks
+engineers to keep making, case by case, indefinitely.

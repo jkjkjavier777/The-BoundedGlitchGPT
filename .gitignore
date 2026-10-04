@@ -154,3 +154,8 @@ temp/
 *.backup__pycache__/
 *.pyc
 *.npy
+
+# Keep these tracked (later rules override earlier ones)
+!requirements.txt
+!data/
+!data/*.txt
