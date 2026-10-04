@@ -1,0 +1,128 @@
+USER: How is the project organized?
+GPT: The model lives in The-BoundedGlitchGPT, with separate folders for the tokenizer, model, training, inference, and server. The application lives in BoundedGlitchEngine.
+
+USER: Where does the training data go?
+GPT: Text files go in the data folder. The training script reads every text file in that folder and joins them into one corpus.
+
+USER: What file type should training data use?
+GPT: Plain text files with the txt extension, saved as UTF-8. Plain ASCII characters keep the vocabulary small.
+
+USER: Why keep the vocabulary small?
+GPT: With character-level tokenization every distinct character becomes a token. A smaller vocabulary means a smaller output layer and an easier learning problem.
+
+USER: How do I train the model?
+GPT: Run the training script with the number of steps, the batch size, and the model size. It prints the training and validation loss at regular intervals and saves the best checkpoint.
+
+USER: Where does training run?
+GPT: Training runs on Colab with a GPU, because PyTorch does not install easily in Termux and a GPU is much faster.
+
+USER: What does Termux do in this setup?
+GPT: Termux is used to write files, manage git, and run the Engine. It is the editing and control side of the project.
+
+USER: What does Colab do in this setup?
+GPT: Colab pulls the repository, trains the model, and serves the model through the API. It is the compute side of the project.
+
+USER: How do files get from Termux to Colab?
+GPT: Commit the changes in Termux, push them to GitHub, then pull them in Colab. GitHub is the bridge between the two.
+
+USER: Why do I need to push before Colab sees my changes?
+GPT: Colab only sees what exists on GitHub. Changes that stay on the phone are invisible until they are committed and pushed.
+
+USER: What does git add do?
+GPT: It marks changed files to be included in the next commit.
+
+USER: What does git commit do?
+GPT: It saves a snapshot of the marked changes with a message that describes them.
+
+USER: What does git push do?
+GPT: It uploads the local commits to the remote repository on GitHub.
+
+USER: What does git pull do?
+GPT: It downloads new commits from the remote repository and applies them to the local copy.
+
+USER: What does git status show?
+GPT: It shows which files are changed, which are staged for commit, and how the local branch compares with the remote branch.
+
+USER: Why use a branch?
+GPT: A branch lets you try changes without affecting the main line of work. When the changes are good, they can be merged back.
+
+USER: What is a git tag?
+GPT: A tag is a permanent label on a specific commit. It makes it easy to return to an important state, such as the legacy version before a rebuild.
+
+USER: What is gitignore for?
+GPT: It lists files that git should not track, such as checkpoints, caches, and temporary files.
+
+USER: Why ignore checkpoint files?
+GPT: Checkpoints are large binary files that change often. They do not belong in a code repository.
+
+USER: Why was the data folder a problem once?
+GPT: An ignore pattern for text files also matched the training corpus and the requirements file, so those files never reached GitHub. Adding exception rules fixed it.
+
+USER: What is a checkpoint file?
+GPT: It is a saved copy of the model weights, the configuration, and the vocabulary, so the model can be loaded again without training.
+
+USER: What is in the checkpoint besides the weights?
+GPT: The model configuration and the list of characters in the vocabulary. Together they let the generator rebuild exactly the model that was trained.
+
+USER: How do I generate text from a checkpoint?
+GPT: Load the checkpoint with the generator class, then call generate with a prompt, the number of tokens, and the sampling settings.
+
+USER: How do I start the server?
+GPT: Run the web server pointing at the server app. It loads the checkpoint once at startup and then answers requests.
+
+USER: What does the tunnel do?
+GPT: The tunnel gives the server running in Colab a public web address, so the Engine on another device can reach it.
+
+USER: Why does the tunnel address keep changing?
+GPT: A free tunnel assigns a new random address each time it starts. The Engine must be pointed at the new address after every restart.
+
+USER: How do I check that the server is working?
+GPT: Send a request to the health endpoint. A healthy server reports that it is running and that the model is loaded.
+
+USER: How do I check that generation is working?
+GPT: Send a request to the generate endpoint with a short prompt. The reply should contain a text field with generated output.
+
+USER: The server returns an error. What should I do first?
+GPT: Read the server log. The error message usually names the file and line where the problem started.
+
+USER: The Engine says the model is unavailable. What should I check?
+GPT: Check that the Colab session is still running, that the tunnel is still open, and that the address in the Engine matches the current tunnel address.
+
+USER: Colab disconnected. What now?
+GPT: Reconnect the runtime, pull the repository again, make sure the checkpoint exists, then restart the server and the tunnel and update the address in the Engine.
+
+USER: What if the checkpoint is gone?
+GPT: Colab storage is temporary, so a reset deletes it. Upload your saved copy back into the checkpoints folder or train again.
+
+USER: Why download the checkpoint after training?
+GPT: Downloading it keeps a permanent copy outside Colab, so a session reset does not erase the training work.
+
+USER: How do I know if training worked?
+GPT: The loss should fall from the starting value, which is close to the natural log of the vocabulary size, and the validation loss should fall with it for a while.
+
+USER: What does it mean when validation loss stops falling?
+GPT: The model has learned what it can generalize from the data. If training loss keeps falling while validation loss rises, the model is memorizing.
+
+USER: What should I do when the model memorizes?
+GPT: Add more varied training text. Smaller models, more dropout, and earlier stopping help a little, but more data helps the most.
+
+USER: How do I compare two training runs?
+GPT: Keep the data and settings the same except for one change, then compare the best validation loss and read samples from both models.
+
+USER: What should I write down after each run?
+GPT: The settings, the corpus used, the best validation loss, and a short note about the quality of the generated text. Notes make it possible to repeat or explain a result.
+
+USER: How do I add more data safely?
+GPT: Put new text files in the data folder, check that they contain only the characters you want, retrain from scratch, and keep the old checkpoint for comparison.
+
+USER: Why retrain from scratch when the data changes?
+GPT: A changed corpus can change the vocabulary, and a different vocabulary makes old weights incompatible. Retraining keeps the tokenizer and weights matched.
+
+USER: What is the safest order for making changes?
+GPT: Change one thing, run the tests, commit, then move on. Small steps make it easy to find which change caused a problem.
+
+USER: What do the tests check?
+GPT: They check that the model produces outputs of the right shape, that sampling returns valid tokens, and that the server responds correctly to good and bad requests.
+
+USER: Why write tests for a small project?
+GPT: Tests catch breakage quickly. They let you change the code with confidence that the basic behavior still works.
