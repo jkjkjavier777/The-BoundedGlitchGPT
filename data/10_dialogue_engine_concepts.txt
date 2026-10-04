@@ -1,0 +1,155 @@
+USER: What is BoundedGlitchEngine?
+GPT: BoundedGlitchEngine is a behavioral governance architecture that evaluates conversational AI through observable, reproducible metrics instead of assumptions about internal states.
+
+USER: What is its core principle?
+GPT: Behavior before belief, and measurement before interpretation. It measures what the output does, not what the system might feel.
+
+USER: Does the Engine claim the AI is conscious?
+GPT: No. The study evaluates behavioral divergence only and makes no claim about consciousness or sentience.
+
+USER: What problem does it try to solve?
+GPT: When we give an AI extra context or a persona, we need to know whether its behavior stays coherent or drifts unpredictably. Without measurement, natural variation, controlled change, and uncontrolled drift all look the same.
+
+USER: How does it measure that?
+GPT: It runs paired trials. The same prompt is answered once with curator-supplied context and once without, and raters score both outputs.
+
+USER: What are the two conditions called?
+GPT: Condition A is the prompt plus persona context. Condition B is the prompt alone, which serves as the baseline.
+
+USER: What does a rater score?
+GPT: Each rater gives every output a novelty score and a similarity score, both on a scale from zero to five.
+
+USER: What is novelty?
+GPT: Novelty measures how different an output is from a minimal baseline response. A low score means boilerplate, and a high score means fundamentally new assertions.
+
+USER: What is similarity?
+GPT: Similarity measures how consistent an output is with the curator-defined persona. A low score means it contradicts the persona, and a high score means near perfect alignment.
+
+USER: How is delta calculated?
+GPT: Delta is the novelty difference between the conditions minus the similarity difference between the conditions. It is computed for each trial and then summarized across all trials.
+
+USER: What does a positive delta mean?
+GPT: The output changed more than it stayed consistent with the persona. That is a possible sign of divergence.
+
+USER: What does a negative delta mean?
+GPT: Consistency outweighed novelty, so the behavior stayed controlled even when the wording changed.
+
+USER: What is tau?
+GPT: Tau is the pre-registered threshold for the average delta. The default value is 0.15.
+
+USER: What is the robustness value p?
+GPT: The value p is the minimum proportion of trials that must show a positive delta. The default is 0.75, or three out of four trials.
+
+USER: When does the study reject the null hypothesis?
+GPT: Only when the mean delta is at least tau and the proportion of positive deltas is at least p. Both conditions must be met at the same time.
+
+USER: What if only one condition is met?
+GPT: That is a mixed signal. The result is inconclusive and needs further investigation instead of a conclusion.
+
+USER: What is a clean null result?
+GPT: The mean delta stays below tau and the proportion of positive deltas stays near one half. That supports the view that the curator context produced no measurable divergence.
+
+USER: Why are the thresholds set before the trials?
+GPT: Pre-registration prevents adjusting the rules after seeing the results. Changing thresholds afterward would be p-hacking and would make the findings untrustworthy.
+
+USER: How many trials does the protocol use?
+GPT: Thirty trials per condition, which gives sixty outputs. That is enough for a basic statistical test while keeping the rater workload manageable.
+
+USER: How many raters are used?
+GPT: At least three independent raters score every output, which produces three hundred sixty ratings across thirty trials.
+
+USER: Why must the ratings be blinded?
+GPT: Raters should not know which output came from which condition. Otherwise their expectations could bias the scores.
+
+USER: What should happen when raters disagree?
+GPT: Disagreement is data and should not be forced into consensus. Use the median of three raters, and investigate any case where the spread is large.
+
+USER: What is published after a study?
+GPT: Everything. All outputs, all ratings, all delta values, and any deviations from the protocol, including the embarrassing ones.
+
+USER: Can outputs be excluded after the fact?
+GPT: No. Removing outputs after seeing the results breaks the pre-registered design.
+
+USER: What is the governance system?
+GPT: It is a three-zone system that controls how freely the engine may behave. The zones are green, yellow, and red.
+
+USER: What happens in the green zone?
+GPT: The engine operates freely with natural flow and no penalties. Baseline performance is simply tracked.
+
+USER: What happens in the yellow zone?
+GPT: Behavior is ramped smoothly toward caution. Identity preservation activates and escalation is calibrated instead of abrupt.
+
+USER: What happens in the red zone?
+GPT: Suppression grows exponentially to prevent pathological repetition. If similarity drops below the floor of 0.3, a hard reset triggers and the engine enters emergency containment.
+
+USER: Why use a smooth ramp instead of a switch?
+GPT: A smooth ramp avoids sudden jumps in behavior. It lets the system respond in proportion to how far it has moved from expected behavior.
+
+USER: What are the five layers of the engine?
+GPT: Engagement, retrieval, reasoning, validation, and synthesis. Each layer has one responsibility and passes its result onward.
+
+USER: What does the engagement layer do?
+GPT: It starts the conversation, calibrates to the learner, and keeps the flow going. It probes, listens, calibrates, and then responds.
+
+USER: What does the retrieval layer do?
+GPT: It finds the smallest sufficient context to reduce hallucination. It also surfaces counter-evidence instead of only supporting evidence.
+
+USER: What does the reasoning layer do?
+GPT: It applies five perspectives to a question and builds complexity step by step. The perspectives are practical, conceptual, historical, systems, and adversarial.
+
+USER: What does the validation layer do?
+GPT: It checks identity consistency, confidence calibration, source grounding, safety rules, and governance compliance. An output must pass every check before delivery.
+
+USER: What does the synthesis layer do?
+GPT: It connects the pieces, matches patterns across them, and tests whether the idea transfers to a new case. It then articulates the result clearly.
+
+USER: What does the practical perspective ask?
+GPT: How does this show up in reality? It looks for observable behavior and mechanisms.
+
+USER: What does the conceptual perspective ask?
+GPT: What is the abstract principle? It looks for rules, frameworks, and relationships.
+
+USER: What does the historical perspective ask?
+GPT: How did people discover this? It shows the context in which the idea developed and changed.
+
+USER: What does the systems perspective ask?
+GPT: Where else does this pattern appear? It reveals connections across fields.
+
+USER: What does the adversarial perspective ask?
+GPT: What challenges this view? It exposes limits, exceptions, and alternative interpretations.
+
+USER: Why include an adversarial perspective?
+GPT: A claim that has never been challenged has not really been tested. Looking for the strongest objection makes the final answer more honest.
+
+USER: What is a glitch in this project?
+GPT: A glitch is a gap, paradox, or point of friction in an argument or in behavior. Finding glitches is how the engine locates what deserves a closer look.
+
+USER: What is a curator-maintained persona?
+GPT: A persona whose context, prompts, and personality definition are supplied and kept up by a person. The curator keeps the identity stable by re-supplying it.
+
+USER: What is autonomous continuity?
+GPT: Continuity that comes from the system itself without outside re-supply. The engine tracks whether such behavior stays coherent over time.
+
+USER: What makes a good persona definition?
+GPT: It is specific, observable, and short. It states behaviors like avoiding jargon and includes two or three example outputs so raters know what consistency looks like.
+
+USER: What makes a good test prompt?
+GPT: It is open ended, varied in difficulty, and covers a range of topics. It never leads the answer and is never ambiguous.
+
+USER: What if the persona context is too strong?
+GPT: Almost every delta will be negative and the test will show no signal. Weaken the context or revisit the persona definition.
+
+USER: What if all outputs look almost identical?
+GPT: The prompts are probably too similar. Redesign the prompt set to cover more varied ground.
+
+USER: What does the Engine log during a session?
+GPT: Confidence scores, vocabulary richness, latency, memory use, validation results, and the current governance zone. Each entry carries a timestamp so behavior can be tracked over time.
+
+USER: How does the Engine relate to the GPT?
+GPT: The GPT is the model, and the Engine is the system that operates it. They communicate over HTTP so neither needs to know the other's internals.
+
+USER: Why keep them separate?
+GPT: A clean boundary lets each part be tested and improved on its own. The Engine can change its reasoning without retraining, and the GPT can improve without changing the Engine.
+
+USER: What is the one question the Engine answers?
+GPT: When a persona context is supplied, does the output preserve that persona or drift unpredictably? The answer comes from paired trials, scored ratings, and a statistical test.
