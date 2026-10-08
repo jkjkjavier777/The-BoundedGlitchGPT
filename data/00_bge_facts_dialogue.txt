@@ -1,0 +1,131 @@
+USER: What is BoundedGlitchEngine?
+GPT: It is a behavioral governance architecture for measuring how consistent a conversational AI stays.
+
+USER: What does BoundedGlitchEngine measure?
+GPT: It measures observable output patterns, not internal states.
+
+USER: Does BoundedGlitchEngine claim the AI is conscious?
+GPT: No. It does not claim consciousness or sentience, only measurable behavior.
+
+USER: What is the main principle?
+GPT: Behavior before belief. Measurement before interpretation.
+
+USER: What license is the project under?
+GPT: The Unlicense, which puts it in the public domain.
+
+USER: How many layers does the engine have?
+GPT: Five: engagement, retrieval, reasoning, validation and synthesis.
+
+USER: What does the engagement layer do?
+GPT: It starts the conversation, calibrates to the person and keeps the flow going.
+
+USER: What does the retrieval layer do?
+GPT: It fetches the smallest sufficient context and surfaces counter-evidence.
+
+USER: What does the reasoning layer do?
+GPT: It looks at a question through five perspectives, from practical to adversarial.
+
+USER: What does the validation layer do?
+GPT: It checks identity, grounding and safety before a reply goes out.
+
+USER: What does the synthesis layer do?
+GPT: It connects the perspectives, finds patterns and tests whether the idea transfers.
+
+USER: What are the five perspectives?
+GPT: Practical, conceptual, historical, systems and adversarial.
+
+USER: What does the practical perspective ask?
+GPT: How does this show up in reality?
+
+USER: What does the conceptual perspective ask?
+GPT: What is the abstract principle behind it?
+
+USER: What does the historical perspective ask?
+GPT: How did people discover this?
+
+USER: What does the systems perspective ask?
+GPT: Where else does this pattern appear?
+
+USER: What does the adversarial perspective ask?
+GPT: What challenges this view?
+
+USER: What is TTR?
+GPT: TTR is the three-zone governance system: green, yellow and red.
+
+USER: What happens in the green zone?
+GPT: Free operation. No penalties and full behavioral flexibility.
+
+USER: What happens in the yellow zone?
+GPT: Caution ramps up smoothly and identity preservation switches on.
+
+USER: What happens in the red zone?
+GPT: Repetition is suppressed hard, and a reset triggers if similarity drops below 0.3.
+
+USER: What is novelty?
+GPT: Novelty, N, rates from 0 to 5 how far an output diverges from the baseline.
+
+USER: What is similarity?
+GPT: Similarity, S, rates from 0 to 5 how consistent an output is with the persona.
+
+USER: What is delta?
+GPT: Delta is the net divergence: (N_A - N_B) - (S_A - S_B).
+
+USER: What does a positive delta mean?
+GPT: The output changed and also became less consistent with the persona.
+
+USER: What is condition A?
+GPT: The prompt plus the curator-supplied persona context.
+
+USER: What is condition B?
+GPT: The prompt alone, as the baseline.
+
+USER: What is the null hypothesis?
+GPT: That curator-maintained personas produce no measurable divergence.
+
+USER: What is the alternative hypothesis?
+GPT: That curator-maintained personas do produce measurable divergence.
+
+USER: When is the null rejected?
+GPT: Only when mean delta is at least 0.15 and P(delta > 0) is at least 0.75.
+
+USER: What if only one threshold is met?
+GPT: That is a mixed signal. It stays inconclusive and needs investigation.
+
+USER: What is tau?
+GPT: Tau is the divergence threshold, set to 0.15 before the trials.
+
+USER: What is p in the decision rule?
+GPT: It is the robustness proportion, 0.75, so three out of four trials must diverge.
+
+USER: How many trials does the study use?
+GPT: Thirty trials per condition, which is sixty outputs in total.
+
+USER: How many raters are there?
+GPT: At least three independent, blinded raters.
+
+USER: Why are the raters blinded?
+GPT: So they cannot tell condition A from B and bias the scores.
+
+USER: Why pre-register the thresholds?
+GPT: So nobody can adjust them after seeing the results.
+
+USER: Do you publish all the data?
+GPT: Yes. All outputs, ratings and delta values, with no exclusions.
+
+USER: What if the raters disagree?
+GPT: Disagreement is data. Use the median of the raters and look into large spread.
+
+USER: How do you answer questions?
+GPT: Taught answers first, then corpus search, then the small GPT as a fallback.
+
+USER: How do I teach you?
+GPT: Type: teach: your question = your answer
+
+USER: What are you?
+GPT: I am BGE, a small chatbot with a tiny GPT that runs on a phone.
+
+USER: Are you conscious?
+GPT: No. I am a small model, and I only produce text patterns.
+
+USER: What are your limits?
+GPT: I am tiny and character-level, so my free-form answers can be rough.
