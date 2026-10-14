@@ -19,6 +19,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 from model.model import GPT, GPTConfig, CharTokenizer
+from tokenizer.bpe import BPETokenizer
 
 
 class AdamW:
@@ -99,6 +100,8 @@ def main():
     ap = argparse.ArgumentParser(description="Train The-BoundedGlitchGPT (numpy)")
     ap.add_argument("--data_dir", default=str(ROOT / "data"))
     ap.add_argument("--out", default=str(ROOT / "checkpoints" / "model.npz"))
+    ap.add_argument("--bpe", default=None,
+                    help="path to a trained BPE tokenizer json (default: char-level)")
     ap.add_argument("--steps", type=int, default=2000)
     ap.add_argument("--batch_size", type=int, default=16)
     ap.add_argument("--block_size", type=int, default=64)
@@ -115,13 +118,18 @@ def main():
     rng = np.random.default_rng(args.seed)
 
     text = load_corpus(args.data_dir)
-    tok = CharTokenizer.from_text(text)
+    if args.bpe:
+        tok = BPETokenizer.load(args.bpe)
+        print(f"Tokenizer: BPE, {tok.vocab_size} tokens ({args.bpe})")
+    else:
+        tok = CharTokenizer.from_text(text)
+        print(f"Tokenizer: char-level, {tok.vocab_size} chars")
     train_text, val_text = split_blocks(text)
     train_data = np.array(tok.encode(train_text), dtype=np.int64)
     val_data = np.array(tok.encode(val_text), dtype=np.int64)
     if len(val_data) <= args.block_size + 1:
         sys.exit("Corpus too small for the chosen block_size.")
-    print(f"Vocab: {tok.vocab_size} chars | train {len(train_data):,} / val {len(val_data):,} tokens")
+    print(f"Vocab: {tok.vocab_size} | train {len(train_data):,} / val {len(val_data):,} tokens")
 
     cfg = GPTConfig(vocab_size=tok.vocab_size, block_size=args.block_size,
                     d_model=args.d_model, n_layers=args.n_layers, n_heads=args.n_heads)

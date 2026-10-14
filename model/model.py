@@ -75,6 +75,24 @@ class CharTokenizer:
     def decode(self, ids):
         return "".join(self.itos.get(int(i), "") for i in ids)
 
+    def to_dict(self):
+        return {"type": "char", "chars": self.chars}
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(d["chars"])
+
+
+def tokenizer_from_dict(d):
+    """Rebuild a tokenizer saved inside a checkpoint (char-level or BPE)."""
+    kind = d.get("type", "char")
+    if kind == "char":
+        return CharTokenizer.from_dict(d)
+    if kind == "bpe":
+        from tokenizer.bpe import BPETokenizer  # needs the repo root on sys.path
+        return BPETokenizer.from_dict(d)
+    raise ValueError(f"unknown tokenizer type: {kind}")
+
 
 # ============================================================================
 # 3. PRIMITIVES  (each *_fwd returns (output, cache); *_bwd uses the cache)
@@ -366,7 +384,11 @@ class GPT:
     # ---- save / load -------------------------------------------------------
 
     def save(self, path, tokenizer):
-        meta = json.dumps({"config": asdict(self.config), "chars": tokenizer.chars})
+        tok = tokenizer.to_dict()
+        meta = {"config": asdict(self.config), "tokenizer": tok}
+        if tok["type"] == "char":
+            meta["chars"] = tok["chars"]  # old loaders read this key
+        meta = json.dumps(meta)
         np.savez(path, __meta__=np.array(meta), **self.params)
 
     @classmethod
@@ -374,7 +396,10 @@ class GPT:
         with np.load(path, allow_pickle=False) as f:
             meta = json.loads(str(f["__meta__"]))
             config = GPTConfig(**meta["config"])
-            tokenizer = CharTokenizer(meta["chars"])
+            if "tokenizer" in meta:
+                tokenizer = tokenizer_from_dict(meta["tokenizer"])
+            else:  # checkpoints saved before BPE existed
+                tokenizer = CharTokenizer(meta["chars"])
             model = cls(config, dtype=dtype)
             for k in model.params:
                 model.params[k] = f[k].astype(dtype)
