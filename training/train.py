@@ -84,6 +84,17 @@ def estimate_loss(model, data, batch_size, block_size, rng, batches=10):
     return float(np.mean(losses))
 
 
+def split_blocks(text, seed=1234, val_frac=0.1):
+    """Hold out a random 10% of paragraph blocks (fixed seed -> same split every run)."""
+    blocks = [b for b in text.split("\n\n") if b.strip()]
+    order = np.random.default_rng(seed).permutation(len(blocks))
+    n_val = max(1, int(len(blocks) * val_frac))
+    val_ids = set(order[:n_val].tolist())
+    train = [b for i, b in enumerate(blocks) if i not in val_ids]
+    val = [b for i, b in enumerate(blocks) if i in val_ids]
+    return "\n\n".join(train), "\n\n".join(val)
+
+
 def main():
     ap = argparse.ArgumentParser(description="Train The-BoundedGlitchGPT (numpy)")
     ap.add_argument("--data_dir", default=str(ROOT / "data"))
@@ -105,9 +116,9 @@ def main():
 
     text = load_corpus(args.data_dir)
     tok = CharTokenizer.from_text(text)
-    data = np.array(tok.encode(text), dtype=np.int64)
-    split = int(0.9 * len(data))
-    train_data, val_data = data[:split], data[split:]
+    train_text, val_text = split_blocks(text)
+    train_data = np.array(tok.encode(train_text), dtype=np.int64)
+    val_data = np.array(tok.encode(val_text), dtype=np.int64)
     if len(val_data) <= args.block_size + 1:
         sys.exit("Corpus too small for the chosen block_size.")
     print(f"Vocab: {tok.vocab_size} chars | train {len(train_data):,} / val {len(val_data):,} tokens")
@@ -135,7 +146,7 @@ def main():
                 best_val = val
                 model.save(args.out, tok)
                 mark = "  (saved)"
-            print(f"step {step:5d} | train {loss:.3f} | val {val:.3f} | {time.time() - t0:6.1f}s{mark}")
+            print(f"step {step:5d} | train {loss:.3f} | val {val:.3f} (ppl {math.exp(val):.1f}) | {time.time() - t0:6.1f}s{mark}")
 
     print(f"\nBest val loss {best_val:.3f}. Checkpoint: {args.out}")
     best, _ = GPT.load(args.out)
